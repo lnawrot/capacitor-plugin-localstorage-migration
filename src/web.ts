@@ -6,8 +6,7 @@ export class LocalStorageMigratorWeb
   extends WebPlugin
   implements LocalStorageMigratorPlugin
 {
-  async echo(options: { value: string }): Promise<{ value: string }> {
-    console.log('ECHO', options);
-    return options;
+  async read(key: string): Promise<{ value: string | null }> {
+    return { value: localStorage.getItem(key) };
   }
 }
