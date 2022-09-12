@@ -1,0 +1,31 @@
+{
+  "api": {
+    "name": "LocalStorageMigratorPlugin",
+    "slug": "localstoragemigratorplugin",
+    "docs": "",
+    "tags": [],
+    "methods": [
+      {
+        "name": "read",
+        "signature": "(data: { key: string; }) => Promise<{ value: string | null; }>",
+        "parameters": [
+          {
+            "name": "data",
+            "docs": "",
+            "type": "{ key: string; }"
+          }
+        ],
+        "returns": "Promise<{ value: string | null; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "read"
+      }
+    ],
+    "properties": []
+  },
+  "interfaces": [],
+  "enums": [],
+  "typeAliases": [],
+  "pluginConfigs": []
+}
