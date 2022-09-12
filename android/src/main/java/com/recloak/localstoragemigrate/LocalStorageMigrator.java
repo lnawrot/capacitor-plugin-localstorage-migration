@@ -10,10 +10,11 @@ import java.io.IOException;
 import com.getcapacitor.JSObject;
 
 public class LocalStorageMigrator {
+    final String TAG = "LocalStorageMigrator";
     final String SEPARATOR = "\u0000\u0001";
 
     public String read(Context context, String key) {
-        Log.i("CAP", "read key=" + key);
+        Log.i(TAG, "read key=" + key);
 
         String dataDir = context.getApplicationInfo().dataDir;
         String dbDir = dataDir + "/app_webview/Default/Local Storage/leveldb";
@@ -48,23 +49,23 @@ public class LocalStorageMigrator {
             DB db = factory.open(new File(folder), options);
             return db;
         } catch (IOException exception) {
-            Log.e("CAP", "ioexception: " + exception.getMessage());
+            Log.e(TAG, "ioexception: " + exception.getMessage());
             return null;
         } catch (Exception exception) {
-            Log.e("CAP", "exception");
+            Log.e(TAG, "exception");
             return null;
         }
     }
 
     private String readLevelDbKey(DB db, String key) {
-        Log.i("CAP", "reading key=" + key);
+        Log.i(TAG, "reading key=" + key);
 
         try {
             String value = asString(db.get(bytes(key)));
             if (value != null) {
                 value = value.replace("\u0001", "");
             }
-            Log.i("CAP", "value=" + value);
+            Log.i(TAG, "value=" + value);
             return value;
         } catch (Exception ex) {
             return null;
