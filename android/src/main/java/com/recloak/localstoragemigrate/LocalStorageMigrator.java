@@ -7,32 +7,62 @@ import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 
+import com.getcapacitor.JSObject;
+
 public class LocalStorageMigrator {
-    public String read(Context context, String key) {
-        Log.i("read key=", key);
+    public JSObject read(Context context, String key) {
+        Log.i("CAP", "read key=" + key);
 
         String dataDir = context.getApplicationInfo().dataDir;
-        String dbDir = dataDir + "/app_webview/Local Storage/leveldb";
-        Log.i("db directory=", dbDir);
+        String dbDir = dataDir + "/app_webview/Default/Local Storage/leveldb";
+
+        DB db = initDb(dbDir);
+        if (db == null) return null;
+
+        String value;
+        value = readLevelDbKey(db, "_https://localhost" + key);
+        if (value == null) {
+            value = readLevelDbKey(db, "_http://localhost" + key);
+        }
+        if (value == null) {
+            value = readLevelDbKey(db, "_file://" + key);
+        }
+        if (value == null) {
+            value = readLevelDbKey(db, key);
+        }
 
         try {
-            return readLevelDbKey(dbDir, key);
+            db.close();
+        } catch (Exception ex) {
+            // PASS
+        }
+        return value;
+    }
+
+    private DB initDb(String folder) {
+        try {
+            Options options = new Options();
+            options.createIfMissing(false);
+            DB db = factory.open(new File(folder), options);
+            return db;
         } catch (IOException exception) {
-            Log.e("ioexception", exception.getMessage());
+            Log.e("CAP", "ioexception: " + exception.getMessage());
+            return null;
+        } catch (Exception exception) {
+            Log.e("CAP", "exception");
             return null;
         }
     }
 
-    private String readLevelDbKey(String folder, String key) throws IOException {
-        Options options = new Options();
-        options.createIfMissing(false);
-        DB db = factory.open(new File(folder), options);
+    private String readLevelDbKey(DB db, String key) {
+        Log.i("CAP", "reading key=" + key);
+
         try {
             String value = asString(db.get(bytes(key)));
-            Log.i("value=", value);
+            Log.i("CAP", "value=" + value);
             return value;
-        } finally {
-            db.close();
+        } catch (Exception ex) {
+            return null;
         }
     }
 }
