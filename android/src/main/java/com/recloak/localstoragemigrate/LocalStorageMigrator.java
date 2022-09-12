@@ -10,7 +10,9 @@ import java.io.IOException;
 import com.getcapacitor.JSObject;
 
 public class LocalStorageMigrator {
-    public JSObject read(Context context, String key) {
+    final String SEPARATOR = "\u0000\u0001";
+
+    public String read(Context context, String key) {
         Log.i("CAP", "read key=" + key);
 
         String dataDir = context.getApplicationInfo().dataDir;
@@ -20,12 +22,12 @@ public class LocalStorageMigrator {
         if (db == null) return null;
 
         String value;
-        value = readLevelDbKey(db, "_https://localhost" + key);
+        value = readLevelDbKey(db, "_https://localhost" + SEPARATOR + key);
         if (value == null) {
-            value = readLevelDbKey(db, "_http://localhost" + key);
+            value = readLevelDbKey(db, "_http://localhost" + SEPARATOR + key);
         }
         if (value == null) {
-            value = readLevelDbKey(db, "_file://" + key);
+            value = readLevelDbKey(db, "_file://" + SEPARATOR + key);
         }
         if (value == null) {
             value = readLevelDbKey(db, key);
@@ -59,6 +61,9 @@ public class LocalStorageMigrator {
 
         try {
             String value = asString(db.get(bytes(key)));
+            if (value != null) {
+                value = value.replace("\u0001", "");
+            }
             Log.i("CAP", "value=" + value);
             return value;
         } catch (Exception ex) {
